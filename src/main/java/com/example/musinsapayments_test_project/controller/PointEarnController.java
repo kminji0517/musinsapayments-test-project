@@ -1,5 +1,7 @@
 package com.example.musinsapayments_test_project.controller;
 
+import com.example.musinsapayments_test_project.dto.CancelEarnRequest;
+import com.example.musinsapayments_test_project.dto.CancelEarnResponse;
 import com.example.musinsapayments_test_project.dto.EarnPointRequest;
 import com.example.musinsapayments_test_project.dto.EarnPointResponse;
 import com.example.musinsapayments_test_project.service.PointEarnService;
@@ -31,5 +33,16 @@ public class PointEarnController {
     @PostMapping("/earn")
     public ResponseEntity<EarnPointResponse> earn(@Valid @RequestBody EarnPointRequest request) {
         return ResponseEntity.ok(pointEarnService.earn(request));
+    }
+
+    /**
+     * 포인트 적립 취소
+     *
+     * @param request 포인트 적립 취소 요청
+     * @return 포인트 적립 취소 응답
+     */
+    @PostMapping("/earn/cancel")
+    public ResponseEntity<CancelEarnResponse> cancel(@Valid @RequestBody CancelEarnRequest request) {
+        return ResponseEntity.ok(pointEarnService.cancel(request));
     }
 }

@@ -27,6 +27,7 @@ public enum ErrorCode {
     POINT_EARN_NOT_FOUND(HttpStatus.NOT_FOUND, "포인트 적립 내역을 찾을 수 없습니다."),
     POINT_EARN_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "이미 취소된 적립 내역입니다."),
     POINT_EARN_ALREADY_USED(HttpStatus.BAD_REQUEST, "사용된 포인트는 취소할 수 없습니다."),
+    POINT_EARN_ALREADY_EXPIRED(HttpStatus.BAD_REQUEST, "이미 만료된 적립 내역입니다."),
     DUPLICATE_POINT_KEY(HttpStatus.CONFLICT, "이미 존재하는 포인트 키입니다."),
     INVALID_EARN_TYPE_CODE(HttpStatus.BAD_REQUEST, "유효하지 않은 적립 구분 코드입니다."),
     INVALID_EXPIRED_DAYS(HttpStatus.BAD_REQUEST, "만료일은 1일 이상 5년 미만이어야 합니다."),

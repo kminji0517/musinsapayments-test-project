@@ -77,4 +77,15 @@ public class PointEarn {
         this.cancelledAt = cancelledAt;
         this.cancelReasonCode = cancelReasonCode;
     }
+
+    /**
+     * 포인트 적립 취소
+     *
+     * @param cancelReasonCode 취소 사유 코드
+     */
+    public void cancel(String cancelReasonCode) {
+        this.earnStatusCode = "CANCELLED";
+        this.cancelledAt = LocalDateTime.now();
+        this.cancelReasonCode = cancelReasonCode;
+    }
 }

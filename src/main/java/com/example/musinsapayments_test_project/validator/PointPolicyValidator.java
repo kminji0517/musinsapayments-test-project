@@ -38,8 +38,7 @@ public class PointPolicyValidator {
             throw new PointException(ErrorCode.EXCEED_MAX_EARN_AMOUNT);
         }
 
-        // 회원 적립 내역 조회 (비관적 락 - 동시 적립 방지)
-        List<PointEarn> activePoints = pointEarnRepository.findByMemberIdAndEarnStatusCodeWithLock(memberId, "ACTIVE");
+        List<PointEarn> activePoints = pointEarnRepository.findByMemberIdAndEarnStatusCode(memberId, "ACTIVE");
         long totalRemainingAmount = activePoints.stream()
                 .mapToLong(PointEarn::getRemainingAmount)
                 .sum();
