@@ -62,30 +62,8 @@ public class PointUseService {
                 .build();
         pointUsageRepository.save(pointUsage);
 
-        // 적립건별 차감 및 사용 상세 내역 생성
-        List<PointUsageDetail> details = new ArrayList<>();
-        long remainingUseAmount = request.getUseAmount();
-
-        for (PointEarn pointEarn : usablePoints) {
-            if (remainingUseAmount <= 0) break;
-
-            // 해당 적립건에서 차감할 금액 계산
-            long deductAmount = Math.min(pointEarn.getRemainingAmount(), remainingUseAmount);
-
-            // 적립건 잔액 차감 (더티 체킹으로 자동 UPDATE)
-            pointEarn.deduct(deductAmount);
-
-            // 사용 상세 내역 생성
-            details.add(PointUsageDetail.builder()
-                    .id(new PointUsageDetailId(pointUsage.getUsageId(), pointEarn.getPointKey()))
-                    .usedAmount(deductAmount)
-                    .usedAt(LocalDateTime.now())
-                    .build());
-
-            remainingUseAmount -= deductAmount;
-        }
-
-        pointUsageDetailRepository.saveAll(details);
+        // 적립건별 차감 및 사용 상세 내역 저장
+        deductPoints(usablePoints, pointUsage, request.getUseAmount());
 
         return UsePointResponse.from(pointUsage);
     }
@@ -105,21 +83,65 @@ public class PointUseService {
         PointUsage pointUsage = pointUsageRepository.findByIdWithLock(request.getUsageId())
                 .orElseThrow(() -> new PointException(ErrorCode.POINT_USAGE_NOT_FOUND));
 
-        // 사용 상세 내역 조회
+        // 사용 상세 내역 조회 (만료일 긴 순서로 복구)
         List<PointUsageDetail> details = pointUsageDetailRepository.findByIdUsageId(request.getUsageId());
 
-        // 취소 처리
+        // 적립건별 취소 처리
+        List<String> newPointKeys = processCancel(details, pointUsage, request);
+
+        // 사용 취소 금액 반영
+        pointUsage.cancel(request.getCancelAmount(), request.getCancelReasonCode());
+
+        return CancelUseResponse.of(pointUsage, request.getCancelAmount(), newPointKeys);
+    }
+
+    /**
+     * 적립건별 차감 및 사용 상세 내역 저장
+     *
+     * @param usablePoints 사용 가능 적립 내역 목록
+     * @param pointUsage   포인트 사용 내역
+     * @param useAmount    사용 금액
+     */
+    private void deductPoints(List<PointEarn> usablePoints, PointUsage pointUsage, Long useAmount) {
+        List<PointUsageDetail> details = new ArrayList<>();
+        long remainingUseAmount = useAmount;
+
+        for (PointEarn pointEarn : usablePoints) {
+            if (remainingUseAmount <= 0) break;
+
+            long deductAmount = Math.min(pointEarn.getRemainingAmount(), remainingUseAmount);
+            pointEarn.deduct(deductAmount);
+
+            details.add(PointUsageDetail.builder()
+                    .id(new PointUsageDetailId(pointUsage.getUsageId(), pointEarn.getPointKey()))
+                    .usedAmount(deductAmount)
+                    .usedAt(LocalDateTime.now())
+                    .build());
+
+            remainingUseAmount -= deductAmount;
+        }
+
+        pointUsageDetailRepository.saveAll(details);
+    }
+
+    /**
+     * 적립건별 취소 처리
+     *
+     * @param details    사용 상세 내역 목록
+     * @param pointUsage 포인트 사용 내역
+     * @param request    포인트 사용 취소 요청
+     * @return 신규 적립된 포인트 키 목록
+     */
+    private List<String> processCancel(List<PointUsageDetail> details, PointUsage pointUsage, CancelUseRequest request) {
         List<String> newPointKeys = new ArrayList<>();
         long remainingCancelAmount = request.getCancelAmount();
 
         for (PointUsageDetail detail : details) {
             if (remainingCancelAmount <= 0) break;
 
-            // 해당 상세 내역에서 이미 취소된 금액 조회
+            // 취소 가능한 금액 계산
             Long alreadyCancelledAmount = pointUsageCancelDetailRepository
                     .sumCancelAmountByUsageIdAndPointKey(request.getUsageId(), detail.getId().getPointKey());
-
-            // 취소 가능한 금액 계산
             long cancellableAmount = detail.getUsedAmount() - alreadyCancelledAmount;
             long cancelAmount = Math.min(cancellableAmount, remainingCancelAmount);
 
@@ -129,46 +151,65 @@ public class PointUseService {
             PointEarn pointEarn = pointEarnRepository.findByPointKeyWithLock(detail.getId().getPointKey())
                     .orElseThrow(() -> new PointException(ErrorCode.POINT_EARN_NOT_FOUND));
 
-            // 만료 여부 확인
-            if (pointEarn.getExpiredAt().isBefore(LocalDateTime.now())) {
-                // 만료된 포인트 → 신규 적립 처리
-                String newPointKey = UUID.randomUUID().toString();
-                PointEarn newPointEarn = PointEarn.builder()
-                        .pointKey(newPointKey)
-                        .memberId(pointUsage.getMemberId())
-                        .earnTypeCode(pointEarn.getEarnTypeCode())
-                        .earnStatusCode(EarnStatusCode.ACTIVE)
-                        .earnAmount(cancelAmount)
-                        .remainingAmount(cancelAmount)
-                        .expiredAt(LocalDateTime.now().plusDays(365)
-                                .withHour(23).withMinute(59).withSecond(59))
-                        .earnedAt(LocalDateTime.now())
-                        .build();
-                pointEarnRepository.save(newPointEarn);
-                newPointKeys.add(newPointKey);
-            } else {
-                // 유효한 포인트 → 잔액 복구
-                pointEarn.restore(cancelAmount);
-            }
+            // 만료 여부에 따라 잔액 복구 또는 신규 적립
+            String newPointKey = restoreOrReissue(pointEarn, pointUsage.getMemberId(), cancelAmount);
+            if (newPointKey != null) newPointKeys.add(newPointKey);
 
             // 취소 상세 내역 저장
-            long seq = pointUsageCancelDetailRepository
-                    .countByIdUsageIdAndIdPointKey(request.getUsageId(), detail.getId().getPointKey()) + 1;
-
-            pointUsageCancelDetailRepository.save(
-                    PointUsageCancelDetail.builder()
-                            .id(new PointUsageCancelDetailId(request.getUsageId(), detail.getId().getPointKey(), seq))
-                            .cancelAmount(cancelAmount)
-                            .cancelledAt(LocalDateTime.now())
-                            .build()
-            );
+            saveCancelDetail(request.getUsageId(), detail.getId().getPointKey(), cancelAmount);
 
             remainingCancelAmount -= cancelAmount;
         }
 
-        // 사용 취소 금액 반영
-        pointUsage.cancel(request.getCancelAmount(), request.getCancelReasonCode());
+        return newPointKeys;
+    }
 
-        return CancelUseResponse.of(pointUsage, request.getCancelAmount(), newPointKeys);
+    /**
+     * 만료 여부에 따라 잔액 복구 또는 신규 적립 처리
+     *
+     * @param pointEarn 포인트 적립 엔티티
+     * @param memberId  회원 ID
+     * @param amount    복구/신규 적립 금액
+     * @return 신규 적립 시 포인트 키, 복구 시 null
+     */
+    private String restoreOrReissue(PointEarn pointEarn, String memberId, long amount) {
+        if (pointEarn.getExpiredAt().isBefore(LocalDateTime.now())) {
+            String newPointKey = UUID.randomUUID().toString();
+            PointEarn newPointEarn = PointEarn.builder()
+                    .pointKey(newPointKey)
+                    .memberId(memberId)
+                    .earnTypeCode(pointEarn.getEarnTypeCode())
+                    .earnStatusCode(EarnStatusCode.ACTIVE)
+                    .earnAmount(amount)
+                    .remainingAmount(amount)
+                    .expiredAt(LocalDateTime.now().plusDays(365)
+                            .withHour(23).withMinute(59).withSecond(59))
+                    .earnedAt(LocalDateTime.now())
+                    .build();
+            pointEarnRepository.save(newPointEarn);
+            return newPointKey;
+        }
+        pointEarn.restore(amount);
+        return null;
+    }
+
+    /**
+     * 취소 상세 내역 저장
+     *
+     * @param usageId      사용 ID
+     * @param pointKey     포인트 키
+     * @param cancelAmount 취소 금액
+     */
+    private void saveCancelDetail(Long usageId, String pointKey, long cancelAmount) {
+        long seq = pointUsageCancelDetailRepository
+                .countByIdUsageIdAndIdPointKey(usageId, pointKey) + 1;
+
+        pointUsageCancelDetailRepository.save(
+                PointUsageCancelDetail.builder()
+                        .id(new PointUsageCancelDetailId(usageId, pointKey, seq))
+                        .cancelAmount(cancelAmount)
+                        .cancelledAt(LocalDateTime.now())
+                        .build()
+        );
     }
 }
