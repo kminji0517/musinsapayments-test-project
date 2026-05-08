@@ -291,6 +291,7 @@ class PointUseServiceTest {
         when(pointUsageDetailRepository.findByIdUsageId(anyLong())).thenReturn(List.of(detail));
         when(pointEarnRepository.findByPointKeyWithLock(anyString())).thenReturn(Optional.of(pointEarn));
         when(pointUsageCancelDetailRepository.countByIdUsageIdAndIdPointKey(anyLong(), anyString())).thenReturn(0L);
+        when(pointUsageCancelDetailRepository.sumCancelAmountByUsageIdAndPointKey(anyLong(), anyString())).thenReturn(0L);
 
         CancelUseRequest request = CancelUseRequest.builder()
                 .usageId(1L)
@@ -326,6 +327,7 @@ class PointUseServiceTest {
         when(pointUsageDetailRepository.findByIdUsageId(anyLong())).thenReturn(List.of(detail));
         when(pointEarnRepository.findByPointKeyWithLock(anyString())).thenReturn(Optional.of(pointEarn));
         when(pointUsageCancelDetailRepository.countByIdUsageIdAndIdPointKey(anyLong(), anyString())).thenReturn(0L);
+        when(pointUsageCancelDetailRepository.sumCancelAmountByUsageIdAndPointKey(anyLong(), anyString())).thenReturn(0L);
 
         CancelUseRequest request = CancelUseRequest.builder()
                 .usageId(1L)
@@ -362,6 +364,7 @@ class PointUseServiceTest {
         when(pointEarnRepository.findByPointKeyWithLock(anyString())).thenReturn(Optional.of(expiredPointEarn));
         when(pointEarnRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(pointUsageCancelDetailRepository.countByIdUsageIdAndIdPointKey(anyLong(), anyString())).thenReturn(0L);
+        when(pointUsageCancelDetailRepository.sumCancelAmountByUsageIdAndPointKey(anyLong(), anyString())).thenReturn(0L);
 
         CancelUseRequest request = CancelUseRequest.builder()
                 .usageId(1L)
@@ -378,7 +381,51 @@ class PointUseServiceTest {
     }
 
     @Test
-    @DisplayName("Case12 : 포인트 사용 취소 (존재하지 않는 사용 내역) - 오류")
+    @DisplayName("Case12 : 포인트 사용 취소 (부분 취소 후 나머지 추가 취소) - 정상")
+    void cancel_success_partial_then_remaining() {
+        // given
+        PointUsage pointUsage = PointUsage.builder()
+                .memberId("M001")
+                .orderId("O001")
+                .usageStatusCode(UsageStatusCode.PARTIALLY_CANCELLED)
+                .totalAmount(3000L)
+                .remainingCancelAmount(2000L) // 이미 1000원 취소된 상태
+                .usedAt(LocalDateTime.now())
+                .build();
+
+        PointEarn pointEarn = createPointEarn("PE001", EarnTypeCode.NORMAL, 2000L,
+                LocalDateTime.now().plusDays(365));
+
+        PointUsageDetail detail = PointUsageDetail.builder()
+                .id(new PointUsageDetailId(1L, "PE001"))
+                .usedAmount(3000L)
+                .usedAt(LocalDateTime.now())
+                .build();
+
+        when(pointUsageCancelValidator.validate(anyLong(), anyLong())).thenReturn(pointUsage);
+        when(pointUsageRepository.findByIdWithLock(anyLong())).thenReturn(Optional.of(pointUsage));
+        when(pointUsageDetailRepository.findByIdUsageId(anyLong())).thenReturn(List.of(detail));
+        when(pointEarnRepository.findByPointKeyWithLock(anyString())).thenReturn(Optional.of(pointEarn));
+        when(pointUsageCancelDetailRepository.countByIdUsageIdAndIdPointKey(anyLong(), anyString())).thenReturn(1L);
+        when(pointUsageCancelDetailRepository.sumCancelAmountByUsageIdAndPointKey(anyLong(), anyString())).thenReturn(1000L);
+
+        CancelUseRequest request = CancelUseRequest.builder()
+                .usageId(1L)
+                .cancelAmount(2000L)
+                .cancelReasonCode("OWNER_CANCEL")
+                .build();
+
+        // when
+        CancelUseResponse response = pointUseService.cancel(request);
+
+        // then
+        assertThat(response.getCancelledAmount()).isEqualTo(2000L);
+        assertThat(response.getUsageStatusCode()).isEqualTo(UsageStatusCode.CANCELLED);
+        assertThat(pointEarn.getRemainingAmount()).isEqualTo(4000L);
+    }
+
+    @Test
+    @DisplayName("Case13 : 포인트 사용 취소 (존재하지 않는 사용 내역) - 오류")
     void cancel_usage_not_found() {
         // given
         when(pointUsageCancelValidator.validate(anyLong(), anyLong()))
@@ -397,7 +444,7 @@ class PointUseServiceTest {
     }
 
     @Test
-    @DisplayName("Case13 : 포인트 사용 취소 (이미 취소된 사용 내역) - 오류")
+    @DisplayName("Case14 : 포인트 사용 취소 (이미 취소된 사용 내역) - 오류")
     void cancel_already_cancelled() {
         // given
         when(pointUsageCancelValidator.validate(anyLong(), anyLong()))
@@ -416,7 +463,7 @@ class PointUseServiceTest {
     }
 
     @Test
-    @DisplayName("Case14 : 포인트 사용 취소 (취소 가능 금액 초과) - 오류")
+    @DisplayName("Case15 : 포인트 사용 취소 (취소 가능 금액 초과) - 오류")
     void cancel_exceed_remaining_cancel_amount() {
         // given
         when(pointUsageCancelValidator.validate(anyLong(), anyLong()))
