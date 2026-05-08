@@ -1,5 +1,7 @@
 package com.example.musinsapayments_test_project.domain;
 
+import com.example.musinsapayments_test_project.enums.EarnStatusCode;
+import com.example.musinsapayments_test_project.enums.EarnTypeCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,11 +26,13 @@ public class PointEarn {
     @Column(name = "member_id", nullable = false)
     private String memberId; // 회원 ID (FK)
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "earn_type_code", nullable = false)
-    private String earnTypeCode; // 적립 구분 코드 (NORMAL: 일반, MANUAL: 수기지급)
+    private EarnTypeCode earnTypeCode; // 적립 구분 코드
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "earn_status_code", nullable = false)
-    private String earnStatusCode; // 적립 상태 코드 (ACTIVE: 정상, CANCELLED: 취소, EXPIRED: 만료)
+    private EarnStatusCode earnStatusCode; // 적립 상태 코드
 
     @Column(name = "earn_amount", nullable = false)
     private Long earnAmount; // 적립 금액
@@ -63,7 +67,7 @@ public class PointEarn {
      * @param cancelReasonCode 취소 사유 코드
      */
     @Builder
-    public PointEarn(String pointKey, String memberId, String earnTypeCode, String earnStatusCode,
+    public PointEarn(String pointKey, String memberId, EarnTypeCode earnTypeCode, EarnStatusCode earnStatusCode,
                      Long earnAmount, Long remainingAmount, LocalDateTime expiredAt, LocalDateTime earnedAt,
                      LocalDateTime cancelledAt, String cancelReasonCode) {
         this.pointKey = pointKey;
@@ -84,7 +88,7 @@ public class PointEarn {
      * @param cancelReasonCode 취소 사유 코드
      */
     public void cancel(String cancelReasonCode) {
-        this.earnStatusCode = "CANCELLED";
+        this.earnStatusCode = EarnStatusCode.CANCELLED;
         this.cancelledAt = LocalDateTime.now();
         this.cancelReasonCode = cancelReasonCode;
     }
@@ -96,5 +100,14 @@ public class PointEarn {
      */
     public void deduct(Long amount) {
         this.remainingAmount -= amount;
+    }
+
+    /**
+     * 포인트 잔액 복구
+     *
+     * @param amount 복구 금액
+     */
+    public void restore(Long amount) {
+        this.remainingAmount += amount;
     }
 }

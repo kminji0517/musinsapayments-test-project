@@ -6,6 +6,7 @@ import com.example.musinsapayments_test_project.domain.PointUsageDetail;
 import com.example.musinsapayments_test_project.domain.PointUsageDetailId;
 import com.example.musinsapayments_test_project.dto.UsePointRequest;
 import com.example.musinsapayments_test_project.dto.UsePointResponse;
+import com.example.musinsapayments_test_project.enums.UsageStatusCode;
 import com.example.musinsapayments_test_project.repository.PointEarnRepository;
 import com.example.musinsapayments_test_project.repository.PointUsageDetailRepository;
 import com.example.musinsapayments_test_project.repository.PointUsageRepository;
@@ -50,7 +51,7 @@ public class PointUseService {
         PointUsage pointUsage = PointUsage.builder()
                 .memberId(request.getMemberId())
                 .orderId(request.getOrderId())
-                .usageStatusCode("USED")
+                .usageStatusCode(UsageStatusCode.USED)
                 .totalAmount(request.getUseAmount())
                 .remainingCancelAmount(request.getUseAmount())
                 .usedAt(LocalDateTime.now())

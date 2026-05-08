@@ -1,5 +1,6 @@
 package com.example.musinsapayments_test_project.domain;
 
+import com.example.musinsapayments_test_project.enums.UsageStatusCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,8 +29,9 @@ public class PointUsage {
     @Column(name = "order_id", nullable = false)
     private String orderId; // 주문 ID (FK)
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "usage_status_code", nullable = false)
-    private String usageStatusCode; // 사용 상태 코드 (USED: 사용, CANCELLED: 취소)
+    private UsageStatusCode usageStatusCode; // 사용 상태 코드
 
     @Column(name = "total_amount", nullable = false)
     private Long totalAmount; // 총 사용 금액
@@ -54,7 +56,7 @@ public class PointUsage {
      * @param usedAt                사용일자
      */
     @Builder
-    public PointUsage(String memberId, String orderId, String usageStatusCode,
+    public PointUsage(String memberId, String orderId, UsageStatusCode usageStatusCode,
                       Long totalAmount, Long remainingCancelAmount, LocalDateTime usedAt) {
         this.memberId = memberId;
         this.orderId = orderId;
@@ -65,21 +67,18 @@ public class PointUsage {
     }
 
     /**
-     * 취소 가능 잔여 금액 감소
+     * 포인트 사용 취소 금액 차감
      *
-     * @param amount 취소 금액
-     */
-    public void decreaseRemainingCancelAmount(Long amount) {
-        this.remainingCancelAmount -= amount;
-    }
-
-    /**
-     * 사용 상태 취소로 변경
-     *
+     * @param cancelAmount     취소 금액
      * @param cancelReasonCode 취소 사유 코드
      */
-    public void cancel(String cancelReasonCode) {
-        this.usageStatusCode = "CANCELLED";
+    public void cancel(Long cancelAmount, String cancelReasonCode) {
+        this.remainingCancelAmount -= cancelAmount;
         this.cancelReasonCode = cancelReasonCode;
+        if (this.remainingCancelAmount == 0) {
+            this.usageStatusCode = UsageStatusCode.CANCELLED;
+        } else {
+            this.usageStatusCode = UsageStatusCode.PARTIALLY_CANCELLED;
+        }
     }
 }

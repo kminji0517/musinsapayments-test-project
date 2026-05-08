@@ -5,9 +5,11 @@ import com.example.musinsapayments_test_project.dto.CancelEarnRequest;
 import com.example.musinsapayments_test_project.dto.CancelEarnResponse;
 import com.example.musinsapayments_test_project.dto.EarnPointRequest;
 import com.example.musinsapayments_test_project.dto.EarnPointResponse;
+import com.example.musinsapayments_test_project.enums.EarnStatusCode;
 import com.example.musinsapayments_test_project.exception.ErrorCode;
 import com.example.musinsapayments_test_project.exception.PointException;
 import com.example.musinsapayments_test_project.repository.PointEarnRepository;
+import com.example.musinsapayments_test_project.repository.PointPolicyRepository;
 import com.example.musinsapayments_test_project.validator.PointEarnCancelValidator;
 import com.example.musinsapayments_test_project.validator.PointEarnValidator;
 import com.example.musinsapayments_test_project.validator.PointPolicyValidator;
@@ -26,6 +28,7 @@ import java.time.LocalDateTime;
 public class PointEarnService {
 
     private final PointEarnRepository pointEarnRepository;
+    private final PointPolicyRepository pointPolicyRepository;
     private final PointEarnValidator pointEarnValidator;
     private final PointEarnCancelValidator pointEarnCancelValidator;
     private final PointPolicyValidator pointPolicyValidator;
@@ -38,7 +41,7 @@ public class PointEarnService {
      */
     @Transactional
     public EarnPointResponse earn(EarnPointRequest request) {
-        // 선검증 (회원 존재 여부, 적립 구분 코드, 만료일 범위, 포인트 키 중복)
+        // 선검증 (회원 존재 여부, 만료일 범위, 포인트 키 중복)
         pointEarnValidator.validate(request);
 
         // 포인트 정책 검증
@@ -54,7 +57,7 @@ public class PointEarnService {
                 .pointKey(request.getPointKey())
                 .memberId(request.getMemberId())
                 .earnTypeCode(request.getEarnTypeCode())
-                .earnStatusCode("ACTIVE")
+                .earnStatusCode(EarnStatusCode.ACTIVE)
                 .earnAmount(request.getEarnAmount())
                 .remainingAmount(request.getEarnAmount())
                 .expiredAt(expiredAt)
@@ -74,12 +77,14 @@ public class PointEarnService {
      */
     @Transactional
     public CancelEarnResponse cancel(CancelEarnRequest request) {
-        // 선검증 (존재 여부, 이미 취소 여부, 사용 여부)
+        // 선검증 (적립 내역 존재 여부, 이미 취소 여부, 사용 여부)
         pointEarnCancelValidator.validate(request.getPointKey());
 
-        // 비관적 락으로 조회 후 취소
+        // 비관적 락으로 조회 후 취소 처리
         PointEarn pointEarn = pointEarnRepository.findByPointKeyWithLock(request.getPointKey())
                 .orElseThrow(() -> new PointException(ErrorCode.POINT_EARN_NOT_FOUND));
+
+        // 포인트 적립 취소
         pointEarn.cancel(request.getCancelReasonCode());
 
         return CancelEarnResponse.from(pointEarn);

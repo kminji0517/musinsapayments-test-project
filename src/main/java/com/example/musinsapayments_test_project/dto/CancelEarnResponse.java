@@ -1,6 +1,8 @@
 package com.example.musinsapayments_test_project.dto;
 
 import com.example.musinsapayments_test_project.domain.PointEarn;
+import com.example.musinsapayments_test_project.enums.EarnStatusCode;
+import com.example.musinsapayments_test_project.enums.EarnTypeCode;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,8 +18,8 @@ public class CancelEarnResponse {
 
     private String pointKey;       // 포인트 키
     private String memberId;       // 회원 ID
-    private String earnTypeCode;   // 적립 구분 코드
-    private String earnStatusCode; // 적립 상태 코드
+    private EarnTypeCode earnTypeCode;   // 적립 구분 코드
+    private EarnStatusCode earnStatusCode; // 적립 상태 코드
     private Long earnAmount;       // 적립 금액
     private Long remainingAmount;  // 잔여 금액
     private LocalDateTime earnedAt;    // 적립일자

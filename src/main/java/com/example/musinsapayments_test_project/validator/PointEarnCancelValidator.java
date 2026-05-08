@@ -19,7 +19,7 @@ public class PointEarnCancelValidator {
 
     /**
      * 포인트 적립 취소 요청 검증
-     * - 적립 내역 존재 여부, 기취소 여부, 만료 여부, 사용 여부
+     * - 적립 내역 존재 여부, 이미 취소 여부, 만료 여부, 사용 여부
      *
      * @param pointKey 포인트 키
      */
@@ -27,19 +27,19 @@ public class PointEarnCancelValidator {
         PointEarn pointEarn = pointEarnRepository.findByPointKey(pointKey)
                 .orElseThrow(() -> new PointException(ErrorCode.POINT_EARN_NOT_FOUND));
 
-        validateNotCancelled(pointEarn);
+        validateCancellable(pointEarn);
         validateNotExpired(pointEarn);
         validateNotUsed(pointEarn);
     }
 
-    private void validateNotCancelled(PointEarn pointEarn) {
-        if ("CANCELLED".equals(pointEarn.getEarnStatusCode())) {
+    private void validateCancellable(PointEarn pointEarn) {
+        if (!pointEarn.getEarnStatusCode().isCancellable()) {
             throw new PointException(ErrorCode.POINT_EARN_ALREADY_CANCELLED);
         }
     }
 
     private void validateNotExpired(PointEarn pointEarn) {
-        if ("EXPIRED".equals(pointEarn.getEarnStatusCode())) {
+        if (pointEarn.getEarnStatusCode() == com.example.musinsapayments_test_project.enums.EarnStatusCode.EXPIRED) {
             throw new PointException(ErrorCode.POINT_EARN_ALREADY_EXPIRED);
         }
     }

@@ -1,6 +1,7 @@
 package com.example.musinsapayments_test_project.dto;
 
 import com.example.musinsapayments_test_project.domain.PointUsage;
+import com.example.musinsapayments_test_project.enums.UsageStatusCode;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,13 +15,13 @@ import java.time.LocalDateTime;
 @Builder
 public class UsePointResponse {
 
-    private Long usageId;              // 사용 ID
-    private String memberId;           // 회원 ID
-    private String orderId;            // 주문 ID
-    private String usageStatusCode;    // 사용 상태 코드
-    private Long totalAmount;          // 총 사용 금액
-    private Long remainingCancelAmount; // 취소 가능 잔여 금액
-    private LocalDateTime usedAt;      // 사용일자
+    private Long usageId;                       // 사용 ID
+    private String memberId;                    // 회원 ID
+    private String orderId;                     // 주문 ID
+    private UsageStatusCode usageStatusCode;    // 사용 상태 코드
+    private Long totalAmount;                   // 총 사용 금액
+    private Long remainingCancelAmount;         // 취소 가능 잔여 금액
+    private LocalDateTime usedAt;               // 사용일자
 
     /**
      * PointUsage 엔티티로부터 UsePointResponse 생성

@@ -37,6 +37,7 @@ public enum ErrorCode {
     INSUFFICIENT_POINT(HttpStatus.BAD_REQUEST, "포인트 잔액이 부족합니다."),
     EXCEED_REMAINING_CANCEL_AMOUNT(HttpStatus.BAD_REQUEST, "취소 가능 금액을 초과했습니다."),
     DUPLICATE_ORDER_USAGE(HttpStatus.CONFLICT, "해당 주문에 이미 포인트가 사용되었습니다."),
+    POINT_USAGE_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "이미 취소된 사용 내역입니다."),
 
     // 서버
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
