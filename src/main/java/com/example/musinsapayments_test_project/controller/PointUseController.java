@@ -4,7 +4,6 @@ import com.example.musinsapayments_test_project.dto.CancelUseRequest;
 import com.example.musinsapayments_test_project.dto.CancelUseResponse;
 import com.example.musinsapayments_test_project.dto.UsePointRequest;
 import com.example.musinsapayments_test_project.dto.UsePointResponse;
-import com.example.musinsapayments_test_project.service.PointUseCancelService;
 import com.example.musinsapayments_test_project.service.PointUseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class PointUseController {
 
     private final PointUseService pointUseService;
-    private final PointUseCancelService pointUseCancelService;
 
     /**
      * 포인트 사용
@@ -45,6 +43,6 @@ public class PointUseController {
      */
     @PostMapping("/use/cancel")
     public ResponseEntity<CancelUseResponse> cancel(@Valid @RequestBody CancelUseRequest request) {
-        return ResponseEntity.ok(pointUseCancelService.cancel(request));
+        return ResponseEntity.ok(pointUseService.cancel(request));
     }
 }
