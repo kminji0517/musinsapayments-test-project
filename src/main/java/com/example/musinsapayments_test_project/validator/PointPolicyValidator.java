@@ -2,6 +2,7 @@ package com.example.musinsapayments_test_project.validator;
 
 import com.example.musinsapayments_test_project.domain.PointEarn;
 import com.example.musinsapayments_test_project.domain.PointPolicy;
+import com.example.musinsapayments_test_project.enums.EarnStatusCode;
 import com.example.musinsapayments_test_project.exception.ErrorCode;
 import com.example.musinsapayments_test_project.exception.PointException;
 import com.example.musinsapayments_test_project.repository.PointEarnRepository;
@@ -38,7 +39,7 @@ public class PointPolicyValidator {
             throw new PointException(ErrorCode.EXCEED_MAX_EARN_AMOUNT);
         }
 
-        List<PointEarn> activePoints = pointEarnRepository.findByMemberIdAndEarnStatusCode(memberId, "ACTIVE");
+        List<PointEarn> activePoints = pointEarnRepository.findByMemberIdAndEarnStatusCode(memberId, EarnStatusCode.ACTIVE);
         long totalRemainingAmount = activePoints.stream()
                 .mapToLong(PointEarn::getRemainingAmount)
                 .sum();

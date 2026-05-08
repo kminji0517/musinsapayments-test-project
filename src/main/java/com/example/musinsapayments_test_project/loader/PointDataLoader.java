@@ -54,28 +54,28 @@ public class PointDataLoader {
                         .earnedAt(LocalDateTime.of(2024, 2, 1, 10, 0)).build(),
                 PointEarn.builder().pointKey("PE002").memberId("M001").earnTypeCode(EarnTypeCode.NORMAL).earnStatusCode(EarnStatusCode.ACTIVE)
                         .earnAmount(2000L).remainingAmount(300L)
-                        .expiredAt(LocalDateTime.of(2026, 3, 5, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(1).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 3, 5, 11, 0)).build(),
                 PointEarn.builder().pointKey("PE003").memberId("M001").earnTypeCode(EarnTypeCode.MANUAL).earnStatusCode(EarnStatusCode.ACTIVE)
                         .earnAmount(5000L).remainingAmount(5000L)
-                        .expiredAt(LocalDateTime.of(2026, 4, 10, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(1).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 4, 10, 12, 0)).build(),
                 PointEarn.builder().pointKey("PE004").memberId("M001").earnTypeCode(EarnTypeCode.NORMAL).earnStatusCode(EarnStatusCode.ACTIVE)
                         .earnAmount(3000L).remainingAmount(3000L)
-                        .expiredAt(LocalDateTime.of(2026, 5, 15, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(1).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 5, 15, 13, 0)).build(),
                 PointEarn.builder().pointKey("PE005").memberId("M001").earnTypeCode(EarnTypeCode.NORMAL).earnStatusCode(EarnStatusCode.CANCELLED)
                         .earnAmount(1500L).remainingAmount(1500L)
-                        .expiredAt(LocalDateTime.of(2026, 6, 20, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(1).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 6, 20, 14, 0))
                         .cancelledAt(LocalDateTime.of(2024, 7, 1, 10, 0)).cancelReasonCode("OWNER_CANCEL").build(),
                 PointEarn.builder().pointKey("PE006").memberId("M001").earnTypeCode(EarnTypeCode.MANUAL).earnStatusCode(EarnStatusCode.ACTIVE)
                         .earnAmount(10000L).remainingAmount(10000L)
-                        .expiredAt(LocalDateTime.of(2027, 1, 1, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(3).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 7, 1, 9, 0)).build(),
                 PointEarn.builder().pointKey("PE007").memberId("M001").earnTypeCode(EarnTypeCode.NORMAL).earnStatusCode(EarnStatusCode.ACTIVE)
                         .earnAmount(2500L).remainingAmount(2500L)
-                        .expiredAt(LocalDateTime.of(2026, 8, 1, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(2).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 8, 1, 10, 0)).build(),
 
                 // M002 적립 내역 (6건)
@@ -85,37 +85,37 @@ public class PointDataLoader {
                         .earnedAt(LocalDateTime.of(2024, 4, 1, 10, 0)).build(),
                 PointEarn.builder().pointKey("PE009").memberId("M002").earnTypeCode(EarnTypeCode.MANUAL).earnStatusCode(EarnStatusCode.ACTIVE)
                         .earnAmount(8000L).remainingAmount(6000L)
-                        .expiredAt(LocalDateTime.of(2026, 5, 10, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(1).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 5, 10, 11, 0)).build(),
                 PointEarn.builder().pointKey("PE010").memberId("M002").earnTypeCode(EarnTypeCode.NORMAL).earnStatusCode(EarnStatusCode.ACTIVE)
                         .earnAmount(4000L).remainingAmount(4000L)
-                        .expiredAt(LocalDateTime.of(2026, 6, 15, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(1).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 6, 15, 12, 0)).build(),
                 PointEarn.builder().pointKey("PE011").memberId("M002").earnTypeCode(EarnTypeCode.NORMAL).earnStatusCode(EarnStatusCode.ACTIVE)
                         .earnAmount(2000L).remainingAmount(2000L)
-                        .expiredAt(LocalDateTime.of(2026, 7, 20, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(2).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 7, 20, 13, 0)).build(),
                 PointEarn.builder().pointKey("PE012").memberId("M002").earnTypeCode(EarnTypeCode.NORMAL).earnStatusCode(EarnStatusCode.ACTIVE)
                         .earnAmount(6000L).remainingAmount(6000L)
-                        .expiredAt(LocalDateTime.of(2026, 8, 25, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(2).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 8, 25, 14, 0)).build(),
                 PointEarn.builder().pointKey("PE013").memberId("M002").earnTypeCode(EarnTypeCode.MANUAL).earnStatusCode(EarnStatusCode.ACTIVE)
                         .earnAmount(15000L).remainingAmount(15000L)
-                        .expiredAt(LocalDateTime.of(2027, 1, 1, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(3).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 9, 1, 9, 0)).build(),
 
                 // M003 적립 내역 (5건)
                 PointEarn.builder().pointKey("PE014").memberId("M003").earnTypeCode(EarnTypeCode.NORMAL).earnStatusCode(EarnStatusCode.ACTIVE)
                         .earnAmount(5000L).remainingAmount(5000L)
-                        .expiredAt(LocalDateTime.of(2026, 7, 1, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(1).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 7, 1, 10, 0)).build(),
                 PointEarn.builder().pointKey("PE015").memberId("M003").earnTypeCode(EarnTypeCode.MANUAL).earnStatusCode(EarnStatusCode.ACTIVE)
                         .earnAmount(20000L).remainingAmount(15000L)
-                        .expiredAt(LocalDateTime.of(2027, 1, 1, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(3).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 8, 5, 11, 0)).build(),
                 PointEarn.builder().pointKey("PE016").memberId("M003").earnTypeCode(EarnTypeCode.NORMAL).earnStatusCode(EarnStatusCode.ACTIVE)
                         .earnAmount(3000L).remainingAmount(3000L)
-                        .expiredAt(LocalDateTime.of(2026, 9, 10, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(1).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 9, 10, 12, 0)).build(),
                 PointEarn.builder().pointKey("PE017").memberId("M003").earnTypeCode(EarnTypeCode.NORMAL).earnStatusCode(EarnStatusCode.EXPIRED)
                         .earnAmount(2000L).remainingAmount(0L)
@@ -123,7 +123,7 @@ public class PointDataLoader {
                         .earnedAt(LocalDateTime.of(2024, 10, 15, 13, 0)).build(),
                 PointEarn.builder().pointKey("PE018").memberId("M003").earnTypeCode(EarnTypeCode.NORMAL).earnStatusCode(EarnStatusCode.ACTIVE)
                         .earnAmount(4000L).remainingAmount(4000L)
-                        .expiredAt(LocalDateTime.of(2026, 11, 20, 23, 59))
+                        .expiredAt(LocalDateTime.now().plusYears(2).withHour(23).withMinute(59).withSecond(59))
                         .earnedAt(LocalDateTime.of(2024, 11, 20, 14, 0)).build()
         ));
     }
@@ -132,7 +132,7 @@ public class PointDataLoader {
         pointUsageRepository.saveAll(List.of(
                 // M001 사용 내역 (2건)
                 PointUsage.builder().memberId("M001").orderId("O001").usageStatusCode(UsageStatusCode.USED)
-                        .totalAmount(1000L).remainingCancelAmount(0L)
+                        .totalAmount(1000L).remainingCancelAmount(1000L)
                         .usedAt(LocalDateTime.of(2024, 2, 1, 11, 0)).build(),
                 PointUsage.builder().memberId("M001").orderId("O002").usageStatusCode(UsageStatusCode.CANCELLED)
                         .totalAmount(1700L).remainingCancelAmount(0L)

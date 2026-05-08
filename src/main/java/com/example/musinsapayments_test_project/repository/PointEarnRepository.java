@@ -1,6 +1,7 @@
 package com.example.musinsapayments_test_project.repository;
 
 import com.example.musinsapayments_test_project.domain.PointEarn;
+import com.example.musinsapayments_test_project.enums.EarnStatusCode;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -24,7 +25,7 @@ public interface PointEarnRepository extends JpaRepository<PointEarn, String> {
      * @param earnStatusCode 적립 상태 코드
      * @return 포인트 적립 내역 목록
      */
-    List<PointEarn> findByMemberIdAndEarnStatusCode(String memberId, String earnStatusCode);
+    List<PointEarn> findByMemberIdAndEarnStatusCode(String memberId, EarnStatusCode earnStatusCode);
 
     /**
      * 포인트 키로 포인트 적립 내역 조회
