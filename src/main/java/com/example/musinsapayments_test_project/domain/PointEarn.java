@@ -88,4 +88,13 @@ public class PointEarn {
         this.cancelledAt = LocalDateTime.now();
         this.cancelReasonCode = cancelReasonCode;
     }
+
+    /**
+     * 포인트 잔액 차감
+     *
+     * @param amount 차감 금액
+     */
+    public void deduct(Long amount) {
+        this.remainingAmount -= amount;
+    }
 }

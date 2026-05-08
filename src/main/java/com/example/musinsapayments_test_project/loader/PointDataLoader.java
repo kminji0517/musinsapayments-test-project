@@ -156,59 +156,29 @@ public class PointDataLoader {
      */
     private void loadPointUsage() {
         pointUsageRepository.saveAll(List.of(
-                // M001 사용 내역 (5건)
+                // M001 사용 내역 (2건)
                 PointUsage.builder().memberId("M001").orderId("O001").usageStatusCode("USED")
                         .totalAmount(1000L).remainingCancelAmount(0L)
                         .usedAt(LocalDateTime.of(2024, 2, 1, 11, 0)).build(),
                 PointUsage.builder().memberId("M001").orderId("O002").usageStatusCode("CANCELLED")
                         .totalAmount(1700L).remainingCancelAmount(0L)
                         .usedAt(LocalDateTime.of(2024, 3, 5, 12, 0)).build(),
-                PointUsage.builder().memberId("M001").orderId("O003").usageStatusCode("USED")
-                        .totalAmount(2000L).remainingCancelAmount(2000L)
-                        .usedAt(LocalDateTime.of(2024, 4, 10, 13, 0)).build(),
-                PointUsage.builder().memberId("M001").orderId("O004").usageStatusCode("USED")
-                        .totalAmount(500L).remainingCancelAmount(500L)
-                        .usedAt(LocalDateTime.of(2024, 5, 15, 14, 0)).build(),
-                PointUsage.builder().memberId("M001").orderId("O005").usageStatusCode("USED")
-                        .totalAmount(3000L).remainingCancelAmount(3000L)
-                        .usedAt(LocalDateTime.of(2024, 6, 20, 15, 0)).build(),
 
-                // M002 사용 내역 (6건)
+                // M002 사용 내역 (2건)
                 PointUsage.builder().memberId("M002").orderId("O006").usageStatusCode("USED")
                         .totalAmount(3000L).remainingCancelAmount(0L)
                         .usedAt(LocalDateTime.of(2024, 4, 1, 11, 0)).build(),
                 PointUsage.builder().memberId("M002").orderId("O007").usageStatusCode("USED")
                         .totalAmount(2000L).remainingCancelAmount(2000L)
                         .usedAt(LocalDateTime.of(2024, 5, 10, 12, 0)).build(),
-                PointUsage.builder().memberId("M002").orderId("O008").usageStatusCode("CANCELLED")
-                        .totalAmount(4000L).remainingCancelAmount(0L)
-                        .usedAt(LocalDateTime.of(2024, 6, 15, 13, 0)).build(),
-                PointUsage.builder().memberId("M002").orderId("O009").usageStatusCode("USED")
-                        .totalAmount(1500L).remainingCancelAmount(1500L)
-                        .usedAt(LocalDateTime.of(2024, 7, 20, 14, 0)).build(),
-                PointUsage.builder().memberId("M002").orderId("O010").usageStatusCode("USED")
-                        .totalAmount(2500L).remainingCancelAmount(2500L)
-                        .usedAt(LocalDateTime.of(2024, 8, 25, 15, 0)).build(),
-                PointUsage.builder().memberId("M002").orderId("O006").usageStatusCode("USED")
-                        .totalAmount(1000L).remainingCancelAmount(1000L)
-                        .usedAt(LocalDateTime.of(2024, 9, 1, 10, 0)).build(),
 
-                // M003 사용 내역 (5건)
+                // M003 사용 내역 (2건)
                 PointUsage.builder().memberId("M003").orderId("O011").usageStatusCode("USED")
                         .totalAmount(2000L).remainingCancelAmount(2000L)
                         .usedAt(LocalDateTime.of(2024, 7, 1, 11, 0)).build(),
                 PointUsage.builder().memberId("M003").orderId("O012").usageStatusCode("CANCELLED")
                         .totalAmount(3000L).remainingCancelAmount(0L)
-                        .usedAt(LocalDateTime.of(2024, 8, 5, 12, 0)).build(),
-                PointUsage.builder().memberId("M003").orderId("O013").usageStatusCode("USED")
-                        .totalAmount(4000L).remainingCancelAmount(2000L)
-                        .usedAt(LocalDateTime.of(2024, 9, 10, 13, 0)).build(),
-                PointUsage.builder().memberId("M003").orderId("O014").usageStatusCode("USED")
-                        .totalAmount(1000L).remainingCancelAmount(1000L)
-                        .usedAt(LocalDateTime.of(2024, 10, 15, 14, 0)).build(),
-                PointUsage.builder().memberId("M003").orderId("O015").usageStatusCode("USED")
-                        .totalAmount(2000L).remainingCancelAmount(2000L)
-                        .usedAt(LocalDateTime.of(2024, 11, 20, 15, 0)).build()
+                        .usedAt(LocalDateTime.of(2024, 8, 5, 12, 0)).build()
         ));
     }
 
@@ -220,42 +190,21 @@ public class PointDataLoader {
         pointUsageDetailRepository.saveAll(List.of(
                 // usage_id 1 (M001, O001, 1000원) → PE001에서 1000원
                 PointUsageDetail.builder().id(new PointUsageDetailId(1L, "PE001")).usedAmount(1000L).usedAt(LocalDateTime.of(2024, 2, 1, 11, 0)).build(),
+
                 // usage_id 2 (M001, O002, 1700원) → PE002에서 1700원
                 PointUsageDetail.builder().id(new PointUsageDetailId(2L, "PE002")).usedAmount(1700L).usedAt(LocalDateTime.of(2024, 3, 5, 12, 0)).build(),
-                // usage_id 3 (M001, O003, 2000원) → PE002에서 300원 + PE003에서 1700원
-                PointUsageDetail.builder().id(new PointUsageDetailId(3L, "PE002")).usedAmount(300L).usedAt(LocalDateTime.of(2024, 4, 10, 13, 0)).build(),
-                PointUsageDetail.builder().id(new PointUsageDetailId(3L, "PE003")).usedAmount(1700L).usedAt(LocalDateTime.of(2024, 4, 10, 13, 0)).build(),
-                // usage_id 4 (M001, O004, 500원) → PE003에서 500원
-                PointUsageDetail.builder().id(new PointUsageDetailId(4L, "PE003")).usedAmount(500L).usedAt(LocalDateTime.of(2024, 5, 15, 14, 0)).build(),
-                // usage_id 5 (M001, O005, 3000원) → PE003에서 2800원 + PE004에서 200원
-                PointUsageDetail.builder().id(new PointUsageDetailId(5L, "PE003")).usedAmount(2800L).usedAt(LocalDateTime.of(2024, 6, 20, 15, 0)).build(),
-                PointUsageDetail.builder().id(new PointUsageDetailId(5L, "PE004")).usedAmount(200L).usedAt(LocalDateTime.of(2024, 6, 20, 15, 0)).build(),
 
-                // usage_id 6 (M002, O006, 3000원) → PE008에서 3000원
-                PointUsageDetail.builder().id(new PointUsageDetailId(6L, "PE008")).usedAmount(3000L).usedAt(LocalDateTime.of(2024, 4, 1, 11, 0)).build(),
-                // usage_id 7 (M002, O007, 2000원) → PE009에서 2000원
-                PointUsageDetail.builder().id(new PointUsageDetailId(7L, "PE009")).usedAmount(2000L).usedAt(LocalDateTime.of(2024, 5, 10, 12, 0)).build(),
-                // usage_id 8 (M002, O008, 4000원) → PE010에서 2000원 + PE011에서 2000원
-                PointUsageDetail.builder().id(new PointUsageDetailId(8L, "PE010")).usedAmount(2000L).usedAt(LocalDateTime.of(2024, 6, 15, 13, 0)).build(),
-                PointUsageDetail.builder().id(new PointUsageDetailId(8L, "PE011")).usedAmount(2000L).usedAt(LocalDateTime.of(2024, 6, 15, 13, 0)).build(),
-                // usage_id 9 (M002, O009, 1500원) → PE010에서 1500원
-                PointUsageDetail.builder().id(new PointUsageDetailId(9L, "PE010")).usedAmount(1500L).usedAt(LocalDateTime.of(2024, 7, 20, 14, 0)).build(),
-                // usage_id 10 (M002, O010, 2500원) → PE012에서 2500원
-                PointUsageDetail.builder().id(new PointUsageDetailId(10L, "PE012")).usedAmount(2500L).usedAt(LocalDateTime.of(2024, 8, 25, 15, 0)).build(),
-                // usage_id 11 (M002, O006, 1000원) → PE013에서 1000원
-                PointUsageDetail.builder().id(new PointUsageDetailId(11L, "PE013")).usedAmount(1000L).usedAt(LocalDateTime.of(2024, 9, 1, 10, 0)).build(),
+                // usage_id 3 (M002, O006, 3000원) → PE008에서 3000원
+                PointUsageDetail.builder().id(new PointUsageDetailId(3L, "PE008")).usedAmount(3000L).usedAt(LocalDateTime.of(2024, 4, 1, 11, 0)).build(),
 
-                // usage_id 12 (M003, O011, 2000원) → PE015에서 2000원
-                PointUsageDetail.builder().id(new PointUsageDetailId(12L, "PE015")).usedAmount(2000L).usedAt(LocalDateTime.of(2024, 7, 1, 11, 0)).build(),
-                // usage_id 13 (M003, O012, 3000원) → PE015에서 3000원
-                PointUsageDetail.builder().id(new PointUsageDetailId(13L, "PE015")).usedAmount(3000L).usedAt(LocalDateTime.of(2024, 8, 5, 12, 0)).build(),
-                // usage_id 14 (M003, O013, 4000원) → PE016에서 2000원 + PE017에서 2000원
-                PointUsageDetail.builder().id(new PointUsageDetailId(14L, "PE016")).usedAmount(2000L).usedAt(LocalDateTime.of(2024, 9, 10, 13, 0)).build(),
-                PointUsageDetail.builder().id(new PointUsageDetailId(14L, "PE017")).usedAmount(2000L).usedAt(LocalDateTime.of(2024, 9, 10, 13, 0)).build(),
-                // usage_id 15 (M003, O014, 1000원) → PE016에서 1000원
-                PointUsageDetail.builder().id(new PointUsageDetailId(15L, "PE016")).usedAmount(1000L).usedAt(LocalDateTime.of(2024, 10, 15, 14, 0)).build(),
-                // usage_id 16 (M003, O015, 2000원) → PE018에서 2000원
-                PointUsageDetail.builder().id(new PointUsageDetailId(16L, "PE018")).usedAmount(2000L).usedAt(LocalDateTime.of(2024, 11, 20, 15, 0)).build()
+                // usage_id 4 (M002, O007, 2000원) → PE009에서 2000원
+                PointUsageDetail.builder().id(new PointUsageDetailId(4L, "PE009")).usedAmount(2000L).usedAt(LocalDateTime.of(2024, 5, 10, 12, 0)).build(),
+
+                // usage_id 5 (M003, O011, 2000원) → PE015에서 2000원
+                PointUsageDetail.builder().id(new PointUsageDetailId(5L, "PE015")).usedAmount(2000L).usedAt(LocalDateTime.of(2024, 7, 1, 11, 0)).build(),
+
+                // usage_id 6 (M003, O012, 3000원) → PE015에서 3000원
+                PointUsageDetail.builder().id(new PointUsageDetailId(6L, "PE015")).usedAmount(3000L).usedAt(LocalDateTime.of(2024, 8, 5, 12, 0)).build()
         ));
     }
 }
